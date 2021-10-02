@@ -1,0 +1,50 @@
+/* TO MAKE MARGIN BETWEEN BUTTON ON SPECIFIC SCREEN SIZE */
+@media (max-width: 991.98px) /* ADJUST THE WIDTH TO navbar-expand-lg AS IT IS THE MINIMUM SIZE TO COLLAPSE NAVIGATION BAR */
+{
+  #submit, #masuk
+  {
+    margin-top: 10px !important;
+    margin-left: fit-content  !important;
+  }
+  #text-centered
+  {
+    text-align: center !important;
+  }
+}
+
+/* TO SHORTEN CARD TITLE AND DESCRIPTION WHEN LINE MORE THAN 3 */
+.card-text, .card-title 
+{   
+display: -webkit-box;
+-webkit-line-clamp: 3;
+-webkit-box-orient: vertical;
+overflow: hidden;
+}
+
+#SEE_MORE 
+{   
+display: -webkit-box;
+-webkit-line-clamp: 1;
+-webkit-box-orient: vertical;
+-ms-flex-item-align: start !important;
+align-self: flex-start !important;
+overflow: hidden;
+}
+
+#BUTTON_TOP
+{
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 30px;
+  z-index: 99;
+  border: none;
+  outline: none;
+  background-color: rgb(255, 0, 0);
+  color: white;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  font-size: 1.25rem;
+  line-height: 1.5;
+  border-radius: 0.3rem;
+}
