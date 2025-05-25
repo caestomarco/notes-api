@@ -1,0 +1,7 @@
+node_modules
+notes-api-web-server.pem
+.env
+.prod.env
+*.zip
+notes-api-collection.json
+notes-api-environment.json
