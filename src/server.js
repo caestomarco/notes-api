@@ -2,6 +2,9 @@ require('dotenv').config();
 const Hapi = require('@hapi/hapi');
 const Jwt = require('@hapi/jwt');
 
+// ERROR HANDLING
+const ClientError = require('./exceptions/ClientError');
+
 // NOTES PLUGIN
 const notes = require('./api/notes');
 const NotesValidator = require('./validator/notes');
@@ -18,12 +21,15 @@ const AuthenticationsService = require('./services/postgres/AuthenticationsServi
 const TokenManager = require('./tokenize/TokenManager');
 const AuthenticationsValidator = require('./validator/authentications');
 
-// ERROR HANDLING
-const ClientError = require('./exceptions/ClientError');
+// COLLABORATIONS PLUGIN
+const collaborations = require('./api/collaborations');
+const CollaborationsService = require('./services/postgres/CollaborationsService');
+const CollaborationsValidator = require('./validator/collaborations');
 
 const init = async () =>
 {
-    const notesService = new NotesService();
+    const collaborationsService = new CollaborationsService();
+    const notesService = new NotesService(collaborationsService);
     const usersService = new UsersService();
     const authenticationsService = new AuthenticationsService();
 
@@ -75,6 +81,14 @@ const init = async () =>
             },
         },
         {
+            plugin: collaborations,
+            options: {
+                collaborationsService,
+                notesService,
+                validator: CollaborationsValidator,
+            },
+        },
+        {
             plugin: authentications,
             options: {
                 authenticationsService,
@@ -89,14 +103,30 @@ const init = async () =>
     {
         const { response } = request;
 
-        console.error(response);
-        if (response instanceof ClientError)
+        if (response instanceof Error)
         {
+            if (response instanceof ClientError)
+            {
+                const newResponse = h.response({
+                    status: 'fail',
+                    message: response.message,
+                });
+                newResponse.code(response.statusCode);
+                return newResponse;
+            }
+
+            if (!response.isServer)
+            {
+                return h.continue;
+            }
+
             const newResponse = h.response({
-                status: 'fail',
-                message: response.message,
+                status: 'error',
+                message: 'terjadi kegagalan pada server kami',
             });
-            newResponse.code(response.statusCode);
+
+            newResponse.code(500);
+
             return newResponse;
         }
 

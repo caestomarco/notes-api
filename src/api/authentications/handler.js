@@ -18,7 +18,6 @@ class AuthenticationsHandler
 
         const { username, password } = request.payload;
         const id = await this._usersService.verifyUserCredential(username, password);
-
         const accessToken = this._tokenManager.generateAccessToken({ id });
         const refreshToken = this._tokenManager.generateRefreshToken({ id });
 
@@ -32,7 +31,9 @@ class AuthenticationsHandler
                 refreshToken,
             },
         });
+
         response.code(201);
+
         return response;
     }
 
@@ -41,9 +42,10 @@ class AuthenticationsHandler
         this._validator.validatePutAuthenticationPayload(request.payload);
 
         const { refreshToken } = request.payload;
-        await this._authenticationsService.verifyRefreshToken(refreshToken);
-        const { id } = this._tokenManager.verifyRefreshToken(refreshToken);
 
+        await this._authenticationsService.verifyRefreshToken(refreshToken);
+
+        const { id } = this._tokenManager.verifyRefreshToken(refreshToken);
         const accessToken = this._tokenManager.generateAccessToken({ id });
 
         const response = h.response({
@@ -53,6 +55,7 @@ class AuthenticationsHandler
                 accessToken,
             },
         });
+
         return response;
     }
 
@@ -61,6 +64,7 @@ class AuthenticationsHandler
         this._validator.validateDeleteAuthenticationPayload(request.payload);
 
         const { refreshToken } = request.payload;
+
         await this._authenticationsService.verifyRefreshToken(refreshToken);
         await this._authenticationsService.deleteRefreshToken(refreshToken);
 
